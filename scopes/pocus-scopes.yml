@@ -1,0 +1,59 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  https://auth.pocus.com/.well-known/openid-configuration and
+  https://auth.pocus.com/.well-known/oauth-authorization-server, both HTTP 200, fetched 2026-08-26
+docs: null
+docs_note: >-
+  Pocus publishes no scopes/permissions reference page. The scope list below is read directly from
+  the authorization server's own advertised metadata (`scopes_supported`) and nothing has been
+  added to it.
+name: Pocus OAuth 2.0 scopes
+description: >-
+  The Pocus authorization server advertises only the three standard OpenID Connect scopes. No
+  product-level or resource-level scopes (read/write over accounts, playbooks, lists, signals) are
+  advertised, which means the published OAuth surface authenticates a user but does not express any
+  granular authorization for the Pocus data API.
+
+issuer: https://auth.pocus.com
+authorization_endpoint: https://auth.pocus.com/oauth/authorize
+token_endpoint: https://auth.pocus.com/oauth/token
+
+scopes:
+- name: openid
+  description: >-
+    Standard OpenID Connect scope requesting an ID token. Required to use the OIDC layer.
+  standard: OpenID Connect Core 1.0
+  source: scopes_supported
+- name: profile
+  description: >-
+    Standard OIDC claim scope granting access to the end user's default profile claims.
+  standard: OpenID Connect Core 1.0
+  source: scopes_supported
+- name: email
+  description: >-
+    Standard OIDC claim scope granting access to the end user's email and email_verified claims.
+  standard: OpenID Connect Core 1.0
+  source: scopes_supported
+
+scope_count: 3
+product_scopes_published: 0
+
+granted_grants:
+- authorization_code
+- refresh_token
+- client_credentials
+- 'urn:ietf:params:oauth:grant-type:token-exchange'
+- 'urn:ietf:params:oauth:grant-type:device_code'
+
+pkce:
+  supported: true
+  code_challenge_methods: [S256]
+
+related_authorization_model:
+  note: >-
+    Pocus' actual permission model is role-based inside the workspace, not scope-based on the
+    token. Roles and supplementary permissions are administered in Workspace Settings > User
+    Management and are documented at https://docs.pocus.com/docs/permissions; Okta groups map onto
+    those roles via SAML. That model is not expressed in OAuth scopes.
+  docs: https://docs.pocus.com/docs/permissions

@@ -1,23 +1,145 @@
 aid: pocus
 name: Pocus
-description: 'Pocus is a company surfaced via the API Evangelist harvest backlog (source: secondary-market)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  Pocus is an AI sales intelligence and product-led sales platform that turns product usage,
+  CRM and third-party buying signals into prioritized action for revenue teams. It ingests data
+  from customer data warehouses (Snowflake, Redshift, Postgres, Athena, Databricks) and CRMs
+  (Salesforce, HubSpot), scores and enriches accounts and contacts, and surfaces recommendations
+  to reps through an Intelligent Inbox, Playbooks, Lists, SmartMap and a Chrome extension, with
+  write-back and sequencing into Salesforce, HubSpot, Outreach, Salesloft, Apollo, Gong and Slack.
+  Its programmable surface is a GraphQL core API at api.pocus.com, an OAuth 2.0 / OpenID Connect
+  authorization server at auth.pocus.com, SCIM 2.0 user provisioning and SAML SSO, plus a Snowflake
+  data share for warehouse-native delivery. Pocus was acquired by Apollo.io, announced 2026-03-19.
+image: https://cdn.prod.website-files.com/643354ef999e7685d54b670e/643355a73f44a743d66fa045_apple-icon-256.png
 url: https://raw.githubusercontent.com/api-evangelist/pocus/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:secondary-market
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-26'
 modified: '2026-08-26'
 tags:
 - Company
-apis: []
+- Sales Intelligence
+- Product-Led Sales
+- Revenue Operations
+- Go-To-Market
+- Data Enrichment
+- CRM
+- Artificial Intelligence
+- GraphQL
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: pocus-core-api
+  name: Pocus Core API
+  description: >-
+    The Pocus core API is a GraphQL endpoint at https://api.pocus.com/graphql, confirmed live and
+    authoritatively named as POCUS_CORE_API_ENDPOINT in Pocus' own published @pocus/cli package.
+    Introspection is disabled in production, so no machine-readable schema is retrievable
+    anonymously and Pocus publishes no OpenAPI or SDL. Requests carry a bearer JWT.
+  humanURL: https://docs.pocus.com/docs/what-is-pocus
+  baseURL: https://api.pocus.com
+  tags:
+  - GraphQL
+  - Sales Intelligence
+  properties:
+  - type: Authentication
+    url: authentication/pocus-authentication.yml
+  - type: Conventions
+    url: conventions/pocus-conventions.yml
+  - type: ErrorCatalog
+    url: errors/pocus-problem-types.yml
+  - type: DataModel
+    url: data-model/pocus-data-model.yml
+- aid: pocus-identity
+  name: Pocus Identity (OAuth 2.0 / OpenID Connect)
+  description: >-
+    Pocus operates an OAuth 2.0 authorization server and OpenID Connect provider at
+    auth.pocus.com, publishing RFC 8414 authorization-server metadata, OIDC discovery and a JWKS
+    document anonymously. It supports authorization_code with PKCE (S256), refresh_token,
+    client_credentials, RFC 8693 token exchange and RFC 8628 device authorization grants, and
+    fronts SAML 2.0 SSO for enterprise identity providers such as Okta.
+  humanURL: https://docs.pocus.com/docs/okta
+  baseURL: https://auth.pocus.com
+  tags:
+  - OAuth
+  - OpenID Connect
+  - Identity
+  properties:
+  - type: OAuthScopes
+    url: scopes/pocus-scopes.yml
+  - type: OpenIDConnect
+    url: well-known/pocus-auth-openid-configuration.json
 common:
 - type: Website
-  url: https://www.nasdaqprivatemarket.com/
+  url: https://www.pocus.com/
+- type: DeveloperPortal
+  url: https://docs.pocus.com/
+- type: Documentation
+  url: https://docs.pocus.com/docs/what-is-pocus
+- type: APIReference
+  url: https://docs.pocus.com/docs/pocus-data-share-reference
+- type: GettingStarted
+  url: https://docs.pocus.com/docs/getting-started-with-ai-strategy
+- type: Support
+  url: https://docs.pocus.com/docs/frequently-asked-questions
+- type: Blog
+  url: https://www.pocus.com/blog
+- type: GitHubOrganization
+  url: https://github.com/PocusHQ
+- type: SignUp
+  url: https://app.pocus.com/account/login
+- type: TermsOfService
+  url: https://www.pocus.com/terms-of-service
+- type: PrivacyPolicy
+  url: https://www.pocus.com/privacy-policy
+- type: StatusPage
+  url: https://status.pocus.com/
+- type: LLMsTxt
+  url: llms/pocus-llms.txt
+- type: MCPServer
+  url: mcp/pocus-mcp.yml
+- type: WellKnown
+  url: well-known/pocus-well-known.yml
+- type: Packages
+  url: packages/pocus-packages.yml
+- type: CLI
+  url: cli/pocus-cli.yml
+- type: Components
+  url: components/pocus-components.yml
+- type: Conformance
+  url: conformance/pocus-conformance.yml
+- type: Lifecycle
+  url: lifecycle/pocus-lifecycle.yml
+- type: DomainSecurity
+  url: security/pocus-domain-security.yml
+- type: Plans
+  url: plans/pocus-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/pocus-rate-limits.yml
+x-enrichment:
+  date: '2026-08-26'
+  status: enriched
+  artifacts_added: 19
+  pass: local-v1
+x-coverage:
+  state: covered
+  reason: no-machine-readable-spec
+  detail: >-
+    Pocus runs a live GraphQL API at api.pocus.com/graphql with introspection explicitly disabled
+    ("Introspection is not allowed") and publishes no OpenAPI on any host, so the contract exists
+    and is reachable but cannot be read by a machine; identity is the exception, where
+    auth.pocus.com serves conformant OIDC and OAuth 2.0 metadata.
+  evidence:
+    - url: https://api.pocus.com/graphql
+      status: 500
+    - url: https://api.pocus.com/openapi.json
+      status: 404
+    - url: https://auth.pocus.com/.well-known/openid-configuration
+      status: 200
+    - url: https://docs.pocus.com/mcp
+      status: 401
+  checked: '2026-08-26'

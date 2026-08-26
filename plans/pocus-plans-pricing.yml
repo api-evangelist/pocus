@@ -1,0 +1,55 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://www.pocus.com/pricing (HTTP 200 after a redirect to https://www.pocus.com/),
+  https://www.pocus.com/demo (HTTP 200), https://www.pocus.com/ — fetched 2026-08-26
+name: Pocus plans and pricing
+description: >-
+  Pocus publishes no pricing. There are no tiers, no list prices, no quotas and no published
+  overage terms anywhere on pocus.com. Access is enterprise sales-led, and following the Apollo.io
+  acquisition the only route in is a waitlist.
+
+plan_count: 0
+
+plans: []
+
+evidence:
+- url: https://www.pocus.com/pricing
+  status: 200
+  note: >-
+    Does not serve a pricing page — it redirects to the site root
+    (final URL https://www.pocus.com/), which carries no pricing information.
+- url: https://www.pocus.com/demo
+  status: 200
+  note: >-
+    Titled "Join the Waitlist for Pocus + Apollo". This is the acquisition path to access, not a
+    self-serve purchase.
+- url: https://www.pocus.com/
+  status: 200
+  note: No pricing navigation item and no plan tiers on the homepage.
+
+model:
+  type: enterprise-sales-led
+  self_serve: false
+  free_tier: false
+  trial: false
+  waitlist: true
+  currency: null
+  billing_period: null
+
+usage_metering:
+  metered: true
+  unit: credits
+  evidence: >-
+    Public statements about the Pocus AI Assistant describe "credit consumption" doubling in under
+    six months, so the product meters AI usage in credits. No credit prices, inclusions or overage
+    rates are published.
+  published_rates: false
+
+quotas: []
+overages: []
+
+note: >-
+  plan_count is an honest zero: this is a provider that publishes no plans, not a provider whose
+  plans were missed. Recorded explicitly rather than omitting the artifact, so the absence is
+  countable.

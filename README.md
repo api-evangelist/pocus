@@ -64,5 +64,17 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-Pocus is a company surfaced via the API Evangelist harvest backlog (source: secondary-market) and added to the network as a stub for full-pipeline profiling.
-- https://www.nasdaqprivatemarket.com/
+Pocus is an AI sales intelligence and product-led sales platform that turns product usage, CRM and
+third-party buying signals into prioritized action for revenue teams. Pocus was acquired by
+Apollo.io, announced 2026-03-19.
+
+- Website: https://www.pocus.com/
+- Documentation: https://docs.pocus.com/
+- Status: https://status.pocus.com/
+- GitHub: https://github.com/PocusHQ
+
+**API surface.** The core API is GraphQL at `https://api.pocus.com/graphql` (introspection is
+disabled, and no OpenAPI or SDL is published). Identity is standards-based and machine-readable:
+`https://auth.pocus.com` serves OpenID Connect discovery, RFC 8414 OAuth 2.0 authorization-server
+metadata and a JWKS. Pocus also supports SAML 2.0 SSO and SCIM 2.0 provisioning, serves an
+`llms.txt`, and exposes an auth-gated documentation MCP endpoint at `https://docs.pocus.com/mcp`.

@@ -1,0 +1,111 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  registry.npmjs.org (@pocus/cli + scope:pocus search), api.github.com/orgs/PocusHQ,
+  chromewebstore.google.com, 2026-08-26
+name: Pocus packages and client libraries
+description: >-
+  Pocus publishes exactly one first-party package to a language registry — an oclif CLI on npm —
+  plus a first-party Chrome extension distributed through the Chrome Web Store. There is no
+  official REST/GraphQL client SDK in any language. The npm package has not been republished since
+  2021 and its hardcoded production identity pool no longer exists, so it is recorded as abandoned.
+
+packages:
+- name: '@pocus/cli'
+  registry: npm
+  url: https://www.npmjs.com/package/@pocus/cli
+  official: true
+  official_evidence: >-
+    package.json homepage is https://pocus.com, author is "Pocus Team", and the sole npm maintainer
+    is "pocus_isaac" (Isaac Pellerin, Pocus co-founder/CTO). Scope @pocus contains no other package.
+  language: TypeScript
+  kind: cli
+  version: 0.1.1
+  published: '2021-08-23'
+  first_published: '2021-08-21'
+  versions_published: 3
+  license: null
+  repository: null
+  install: npm install -g @pocus/cli
+  status: abandoned
+  status_evidence: >-
+    Latest release 0.1.1 is dated 2021-08-23 — roughly five years before this probe, and four years
+    before the AI platform the company now sells. The package hardcodes its production AWS Cognito
+    user pool (us-east-1) in lib/util/config.js; that pool now returns
+    {"message":"User pool ... does not exist."} (HTTP 404), so the published CLI can no longer
+    authenticate against Pocus at all.
+  note: >-
+    Bundles @apollo/client and points at ${POCUS_CORE_API_ENDPOINT}/graphql — this package is the
+    authoritative first-party evidence that the Pocus core API is GraphQL at https://api.pocus.com.
+
+- name: Pocus Chrome Extension
+  registry: chrome-web-store
+  url: https://chromewebstore.google.com/detail/pocus/cjglpheainejjoboeclimcajhojjofed
+  official: true
+  official_evidence: >-
+    Linked as the product's own extension from Pocus documentation at
+    https://docs.pocus.com/docs/ai-strategy-chrome-ext.
+  language: JavaScript
+  kind: browser-extension
+  version: 0.0.18
+  published: '2026-05-21'
+  users: 882
+  status: maintained
+  note: >-
+    Actively updated after the Apollo.io acquisition announcement (2026-03-19). This is an end-user
+    surface, not a developer client library — it does not give an integrator programmatic access.
+
+- name: jsforce (fork)
+  registry: github
+  url: https://github.com/PocusHQ/jsforce
+  official: false
+  official_evidence: >-
+    A fork of the community Salesforce JavaScript library in Pocus' own GitHub org (PocusHQ), used
+    internally for their Salesforce integration. It is not a Pocus client library and is not
+    published to npm under the Pocus name.
+  language: TypeScript
+  kind: fork
+  version: null
+  published: null
+  last_pushed: '2024-10-31'
+  note: >-
+    version/published are null because this is an unreleased source fork with no registry
+    entry — checked, nothing to record.
+
+registries_checked:
+- registry: npm
+  result: '@pocus/cli only; scope:pocus search returned total=0 beyond it'
+- registry: PyPI
+  result: no first-party Pocus package
+- registry: RubyGems
+  result: 'no first-party package (the gem named "pocus" is an unrelated third-party iContact/Vocus client by varyonic)'
+- registry: crates.io
+  result: no first-party Pocus package
+- registry: Maven Central
+  result: no first-party Pocus package
+- registry: NuGet
+  result: no first-party Pocus package
+- registry: pkg.go.dev
+  result: no first-party Pocus package
+- registry: Packagist
+  result: no first-party Pocus package
+- registry: GitHub (PocusHQ org)
+  result: 'org exists, name "Pocus", blog https://pocus.io (302s to www.pocus.com); 1 public repo, a jsforce fork'
+
+summary:
+  official_packages: 2
+  official_sdk_libraries: 0
+  languages_covered: []
+  note: >-
+    sdk_count is deliberately not inflated: Pocus ships a CLI and a browser extension, but zero
+    client libraries for its GraphQL API in any language.
+
+false_positives_rejected:
+- name: hocus-pocus / @hocuspocus/* / postcss-hocus-pocus
+  reason: Unrelated projects (Yjs CRDT backend, CSS toolkit) that merely share the substring.
+- name: '@focus-pocus/mcp-server'
+  reason: Third-party project by an unaffiliated author (github.com/Zubin-Teherani/focus-pocus).
+- name: pocus (npm, 0.0.1)
+  reason: An unrelated image-positioning library.
+- name: github.com/pocuslabs
+  reason: Point-of-care ultrasound (POCUS) medical projects — a different domain entirely.

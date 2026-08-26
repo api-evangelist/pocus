@@ -1,0 +1,108 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://status.pocus.com/ (HTTP 200), https://www.pocus.com/blog/our-next-chapter-pocus-is-joining-apollo
+  (HTTP 200), https://www.pocus.com/demo (HTTP 200), registry.npmjs.org, probed 2026-08-26
+name: Pocus API lifecycle
+description: >-
+  Pocus runs a public status page covering an API component, but publishes no versioning policy, no
+  deprecation policy, and no changelog. The dominant lifecycle fact is corporate: Pocus was acquired
+  by Apollo.io in March 2026 and the standalone product is now waitlist-only, which is a
+  material availability signal for anyone considering an integration.
+
+status_page:
+  url: https://status.pocus.com/
+  status: 200
+  provider: Hund.io
+  current_state: Operating Normally
+  observed: '2026-08-26'
+  components:
+  - name: Pocus SaaS / API
+    state: Operational
+  - name: Pocus SaaS / Frontend
+    state: Operational
+  - name: Pocus Homepage
+    state: Operational
+  uptime_reported: 99.998% recent history
+  recent_incident:
+    summary: Pocus Homepage outage
+    window: '2026-08-25 15:58–16:00 MDT'
+  subscribe: true
+  note: >-
+    The status page explicitly monitors an "API" component, independently corroborating that a
+    production API exists even though no reference for it is published.
+
+versioning:
+  policy_published: false
+  scheme: null
+  note: >-
+    No versioning policy page exists. The core API is GraphQL, which conventionally versions by
+    schema evolution rather than URL version, but Pocus documents no deprecation or field-lifecycle
+    commitment. The userinfo endpoint path (/identity/resources/users/v2/me) is the only versioned
+    path observed anywhere on the surface.
+
+deprecation:
+  policy_published: false
+  sunset_header: null
+  deprecation_header: null
+  rfc8594: false
+  note: >-
+    No deprecation policy, no Sunset/Deprecation header usage documented, and no notice period
+    stated. No Deprecation pointer is emitted, because none is published.
+
+sla:
+  published: false
+  note: >-
+    No public SLA or uptime commitment. The status page reports historical uptime but states no
+    contractual target.
+
+changelog:
+  published: false
+  probed:
+  - url: https://docs.pocus.com/changelog
+    status: 404
+  - url: https://www.pocus.com/changelog
+    status: 404
+  - url: https://docs.pocus.com/docs/whats-new
+    status: 404
+  note: >-
+    No dated changelog. Documentation pages do carry per-page `updatedAt` timestamps in their
+    markdown frontmatter (most recent observed 2025-10-22 on the Website Visitors page), which is
+    the only change signal available and is not a changelog.
+
+corporate_lifecycle:
+  event: Acquisition
+  acquirer: Apollo.io
+  announced: '2026-03-19'
+  terms: not disclosed
+  provider_announcement: https://www.pocus.com/blog/our-next-chapter-pocus-is-joining-apollo
+  provider_announcement_status: 200
+  product_state: >-
+    The standalone product is transitioning into Apollo's platform. https://www.pocus.com/demo now
+    titles as "Join the Waitlist for Pocus + Apollo" and https://www.pocus.com/pricing 302s to the
+    homepage, so there is no self-serve path to acquire the product.
+  integration_risk: >-
+    An integrator should treat the api.pocus.com GraphQL surface as at risk of consolidation into
+    Apollo.io's platform. No migration guidance, sunset date, or continuity statement has been
+    published.
+
+decay_signals:
+- signal: First-party CLI abandoned
+  detail: >-
+    @pocus/cli latest release 0.1.1 dated 2021-08-23; its hardcoded production AWS Cognito user
+    pool now returns HTTP 404 "User pool ... does not exist", so the published CLI cannot
+    authenticate.
+- signal: GraphQL introspection disabled
+  detail: >-
+    api.pocus.com/graphql returns "Introspection is not allowed", so the only machine-readable
+    description the platform could offer is switched off.
+- signal: No self-serve acquisition
+  detail: Pricing 302s to the homepage; the demo page is a waitlist.
+
+maintained_signals:
+- signal: Chrome extension actively updated
+  detail: Version 0.0.18 published 2026-05-21 — after the acquisition announcement. 882 users.
+- signal: Status page live and current
+  detail: Reporting normally as of 2026-08-26, with an incident logged the previous day.
+- signal: Documentation MCP endpoint live
+  detail: https://docs.pocus.com/mcp responds to JSON-RPC.

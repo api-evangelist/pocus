@@ -1,0 +1,194 @@
+generated: '2026-08-26'
+method: probed
+source: 'Direct anonymous GET of /.well-known/* on every Pocus-controlled host, 2026-08-26'
+name: Pocus well-known documents
+description: >-
+  Probe of the RFC 8615 well-known namespace across every Pocus host. auth.pocus.com serves a real
+  OpenID Connect discovery document, RFC 8414 OAuth 2.0 authorization-server metadata and a JWKS —
+  all anonymously readable. No other host serves any well-known document: www/pocus.com return an
+  "Invalid .well-known request" page, api.pocus.com returns JSON 404s, and app.pocus.com is a
+  single-page-app catch-all that answers 200 with an identical 3024-byte HTML shell for every path,
+  which is NOT a document and is recorded as a miss.
+
+hosts:
+- host: auth.pocus.com
+  note: >-
+    Pocus' OAuth 2.0 / OpenID Connect authorization server. The userinfo path
+    (/identity/resources/users/v2/me) indicates a Frontegg-backed identity platform operated on a
+    Pocus-controlled hostname; the documents are served from auth.pocus.com, so they are Pocus'.
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: pocus-auth-openid-configuration.json
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: pocus-auth-oauth-authorization-server.json
+  - path: /.well-known/jwks.json
+    status: 200
+    content_type: application/json
+    file: pocus-auth-jwks.json
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+
+- host: www.pocus.com
+  note: Webflow-hosted marketing site; every well-known path returns a 404 "Invalid .well-known request" page.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+
+- host: pocus.com
+  note: Apex; identical behaviour to www.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+
+- host: api.pocus.com
+  note: >-
+    The GraphQL core API host. Returns NestJS-shaped JSON 404s
+    ({"message":"Cannot GET ...","error":"Not Found","statusCode":404}) for every well-known path —
+    an honest 404 from a live API, not an SPA shell.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+
+- host: app.pocus.com
+  note: >-
+    FALSE POSITIVE GUARD — this host answers HTTP 200 with an identical 3024-byte
+    "<!doctype html>" single-page-app shell for EVERY /.well-known/* path (and for /openapi.json,
+    /swagger.json, /api-docs and every other probe). None of these are documents. Recorded as
+    misses; no pointer is claimed from this host.
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not a document — treated as a miss.
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not a document — treated as a miss.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not a document — treated as a miss.
+  - path: /.well-known/api-catalog
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not a document — treated as a miss.
+  - path: /.well-known/ai-plugin.json
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not a document — treated as a miss.
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not an AgentCard — treated as a miss, no AgentCard pointer emitted.
+  - path: /.well-known/agent.json
+    status: 200
+    content_type: text/html
+    file: null
+    note: SPA shell, not an AgentCard — treated as a miss, no AgentCard pointer emitted.
+
+- host: docs.pocus.com
+  note: >-
+    ReadMe.io-hosted documentation. well-known paths 404. Began returning 429 rate-limit
+    interstitials ("Hello there, human!") under sequential probing, so probes here were paced.
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+
+summary:
+  hosts_probed: 6
+  documents_served: 3
+  security_txt: false
+  api_catalog: false
+  agent_card: false
+  openid_configuration: true
+  oauth_authorization_server: true

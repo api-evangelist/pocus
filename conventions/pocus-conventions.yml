@@ -1,0 +1,191 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  https://api.pocus.com/graphql (live behaviour), https://auth.pocus.com well-known metadata,
+  https://docs.pocus.com/llms.txt and linked docs pages, @pocus/cli 0.1.1 source — probed 2026-08-26
+name: Pocus API conventions
+description: >-
+  Cross-cutting runtime semantics for the Pocus surface. Pocus publishes no API reference, so most
+  conventions below are recorded as NOT DOCUMENTED rather than guessed. What can be established is
+  established from live endpoint behaviour and from the provider's own published client package.
+
+auth:
+  style: OAuth 2.0 / OpenID Connect bearer token
+  header: 'Authorization: Bearer <JWT>'
+  issuer: https://auth.pocus.com
+  detail: See authentication/pocus-authentication.yml
+  documented: true
+  documented_where: Authorization server metadata (machine-readable); no prose API auth guide.
+
+transport:
+  core_api:
+    endpoint: https://api.pocus.com/graphql
+    protocol: GraphQL over HTTP POST
+    server: Apollo Server (behind a NestJS application)
+    introspection: disabled
+    csrf_protection: >-
+      Apollo CSRF prevention is enabled. Requests must send a content-type outside the
+      simple-request set (e.g. application/json) or a non-empty x-apollo-operation-name or
+      apollo-require-preflight header, otherwise the request is rejected before execution.
+  identity_api:
+    endpoint: https://auth.pocus.com
+    protocol: REST/JSON
+
+idempotency:
+  supported: false
+  header: null
+  scope: null
+  retention: null
+  documented: false
+  evidence: >-
+    No Idempotency-Key or equivalent header is documented anywhere on docs.pocus.com, and no
+    idempotency semantics are described. The core API is GraphQL, where mutations are not
+    idempotent by protocol and require an explicit application-level key to become so; Pocus
+    defines none.
+  agent_impact: >-
+    An agent retrying a failed Pocus mutation — a CRM write-back, an Outreach sequence enrolment,
+    a contact update — has no published mechanism to guarantee the action fires once. This is a
+    real risk on the write surfaces Pocus documents.
+
+pagination:
+  style: null
+  params: []
+  response_fields: []
+  documented: false
+  evidence: No pagination convention is published; the GraphQL schema that would express it is not introspectable.
+
+filtering_and_expansion:
+  documented: false
+  note: >-
+    Filtering is a first-class END-USER feature (Lists, Filter Deep-Dive, OmniSearch) but is
+    documented as UI behaviour, not as API parameters.
+
+metadata:
+  custom_fields: true
+  note: >-
+    Pocus supports customer-defined fields and "Internal Variables" for passing custom values into
+    third-party tools (https://docs.pocus.com/docs/internal-variables), and Standard Traits /
+    Enrichment Fields on records. These are configuration concepts, not documented API request
+    fields.
+
+request_id_tracing:
+  header: null
+  documented: false
+  observed: >-
+    Responses from docs.pocus.com carry infrastructure trace headers (rndr-id from Render, cf-ray
+    from Cloudflare). These are platform artifacts, not a Pocus-defined correlation ID, and must
+    not be relied on as one.
+
+versioning:
+  style: null
+  documented: false
+  detail: See lifecycle/pocus-lifecycle.yml
+
+error_envelope:
+  formats:
+  - surface: https://api.pocus.com/graphql
+    shape: '{"errors":[{"message":"...","locations":[],"extensions":{}}]}'
+    note: Standard GraphQL error envelope. Observed HTTP 400 and 500 carrying it.
+  - surface: https://api.pocus.com (non-GraphQL paths)
+    shape: '{"message":"...","error":"...","statusCode":404}'
+    note: NestJS default exception shape.
+  - surface: https://auth.pocus.com
+    shape: '{"errors":["..."]}'
+    note: Array-of-strings envelope; also emits a WAF denial body at the host root.
+  - surface: https://docs.pocus.com/mcp
+    shape: '{"jsonrpc":"2.0","error":{"code":-32001,"message":"..."},"id":null}'
+    note: JSON-RPC 2.0 error object.
+  rfc9457: false
+  consistency: >-
+    Four different error envelopes across four surfaces. A client must special-case each host.
+  detail: See errors/pocus-problem-types.yml
+
+rate_limit_signaling:
+  headers: []
+  documented: false
+  detail: See rate-limits/pocus-rate-limits.yml
+
+dry_run_mode:
+  supported: null
+  status: na
+  reason: >-
+    Cannot be assessed. The write surface is a GraphQL API with introspection disabled and no
+    published reference, so whether any mutation accepts a dry-run/preview argument is not
+    determinable from public material. Recorded as na rather than false, because a false would
+    assert an absence that was never observable.
+
+reversibility:
+  grade: undocumented
+  applicable: true
+  applicable_reason: >-
+    Pocus is not read-only. It writes to systems of record outside itself — updating Salesforce and
+    HubSpot records, bulk-updating them via Reverse ETL, creating/updating contacts, and enrolling
+    people into Outreach and Salesloft sequences — and it maintains internal state that users act
+    on (inbox snoozes, Mark Done, Disqualify).
+  write_surfaces:
+  - surface: Update Salesforce
+    docs: https://docs.pocus.com/docs/update-salesforce
+    external_effect: true
+    reversal_operation: null
+    window: null
+  - surface: Update / create contact
+    docs: https://docs.pocus.com/docs/create-contact
+    external_effect: true
+    reversal_operation: null
+    window: null
+  - surface: Reverse ETL (bulk update SFDC and HubSpot records)
+    docs: https://docs.pocus.com/docs/reverse-etl
+    external_effect: true
+    reversal_operation: null
+    window: null
+    note: >-
+      Bulk write-back to the customer's CRM is the highest-consequence action Pocus performs and
+      has no documented undo.
+  - surface: Sequence enrolment (Outreach, Salesloft, Apollo)
+    docs: https://docs.pocus.com/docs/outreach
+    external_effect: true
+    reversal_operation: null
+    window: null
+    note: Enrolment can send email to a real prospect; there is no documented recall.
+  - surface: AI email send to SEP
+    docs: https://docs.pocus.com/docs/automatically-send-ai-email-to-your-sep
+    external_effect: true
+    reversal_operation: null
+    window: null
+  - surface: Playbook actions — Mark Done / Disqualify
+    docs: https://docs.pocus.com/docs/mark-done-disqualify
+    external_effect: false
+    reversal_operation: null
+    window: null
+    note: >-
+      Internal state only. Pocus records snoozes and actions in its ACTION_HISTORY data-share
+      table, so the action is auditable after the fact, but auditability is not reversibility and
+      no undo operation is documented.
+  - surface: Playbook version control
+    docs: https://docs.pocus.com/docs/version-control-for-playbooks
+    external_effect: false
+    reversal_operation: version history on playbook edits
+    window: null
+    note: >-
+      The ONE place Pocus documents a rollback-shaped capability: playbook configuration is
+      version-controlled as it is edited. It governs playbook definitions, not the actions those
+      playbooks already took, and no retention window is stated.
+  operations_reversible: 0
+  windows_stated: 0
+  grade_rationale: >-
+    Grade is `undocumented`, not `documented`, because no reversal OPERATION is published for any
+    action that leaves Pocus. Playbook version control is a configuration rollback and does not
+    reverse a sent email, an enrolled prospect, or a written CRM field. No window is asserted
+    anywhere, and none has been invented here.
+  agent_impact: >-
+    An agent acting through Pocus cannot determine, before acting, whether any write it makes can
+    be taken back. The consequential actions all cross into a customer's CRM or a prospect's inbox,
+    where they cannot be undone by Pocus at all.
+
+cross_links:
+  errors: errors/pocus-problem-types.yml
+  lifecycle: lifecycle/pocus-lifecycle.yml
+  authentication: authentication/pocus-authentication.yml
+  rate_limits: rate-limits/pocus-rate-limits.yml
+  scopes: scopes/pocus-scopes.yml
+  data_model: data-model/pocus-data-model.yml

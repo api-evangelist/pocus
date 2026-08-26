@@ -1,0 +1,133 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  Live unauthenticated responses from https://api.pocus.com, https://api.pocus.com/graphql,
+  https://auth.pocus.com and https://docs.pocus.com/mcp, observed 2026-08-26
+name: Pocus error catalog
+description: >-
+  Pocus publishes no error reference. This catalog is built ONLY from error bodies actually
+  returned by live Pocus endpoints during discovery probing — it is an observation log, not a
+  reconstruction of the provider's error taxonomy, which remains unpublished. No error codes have
+  been inferred or invented.
+
+format: framework-native
+rfc9457: false
+rfc9457_note: >-
+  No surface returns application/problem+json. Four different error envelopes are in use across
+  four hosts.
+
+envelopes:
+- id: nest-http-exception
+  surface: https://api.pocus.com (non-GraphQL paths)
+  content_type: application/json; charset=utf-8
+  shape:
+    message: string
+    error: string
+    statusCode: integer
+  example: '{"message":"Cannot GET /openapi.json","error":"Not Found","statusCode":404}'
+  note: NestJS default exception filter output.
+
+- id: graphql-errors
+  surface: https://api.pocus.com/graphql
+  content_type: application/json; charset=utf-8
+  shape:
+    errors:
+    - message: string
+      locations: array
+      extensions: object
+  note: >-
+    Standard GraphQL error envelope. Note the HTTP status does not track the error class — an
+    introspection refusal returned HTTP 500 and a CSRF refusal returned HTTP 400, both with a
+    200-shaped GraphQL body.
+
+- id: auth-errors-array
+  surface: https://auth.pocus.com
+  content_type: application/json; charset=utf-8
+  shape:
+    errors: array of strings
+  example: '{"errors":["The requested URL was not found on this server."]}'
+
+- id: waf-denial
+  surface: https://auth.pocus.com/ (host root)
+  content_type: application/json
+  shape:
+    message: string
+  example: '{"message":"Task Failed successfully: access denied. Your request was blocked by WAF security rules."}'
+  note: >-
+    A WAF interstitial, not an application error. Recorded because a client hitting the auth host
+    root will receive it; the well-known paths beneath it are not blocked.
+
+- id: jsonrpc-error
+  surface: https://docs.pocus.com/mcp
+  content_type: application/json; charset=utf-8
+  shape:
+    jsonrpc: '2.0'
+    error:
+      code: integer
+      message: string
+    id: null
+  example: '{"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"},"id":null}'
+  note: JSON-RPC 2.0 conformant.
+
+observed_problems:
+- id: not-found
+  status: 404
+  envelope: nest-http-exception
+  title: Route not found on the core API host
+  observed_at: https://api.pocus.com/openapi.json
+  remediation: >-
+    api.pocus.com exposes a single GraphQL route. Any REST path returns this. Use
+    POST /graphql.
+
+- id: graphql-csrf-blocked
+  status: 400
+  envelope: graphql-errors
+  title: Operation blocked as potential Cross-Site Request Forgery
+  message: >-
+    "This operation has been blocked as a potential Cross-Site Request Forgery (CSRF). Please
+    either specify a 'content-type' header (with a type that is not one of
+    application/x-www-form-urlencoded, multipart/form-data, text/plain) or provide a non-empty
+    value for one of the following headers: x-apollo-operation-name, apollo-require-preflight"
+  observed_at: https://api.pocus.com/graphql
+  remediation: >-
+    Send Content-Type: application/json, or set x-apollo-operation-name or
+    apollo-require-preflight. The message is self-remediating, which is good practice.
+
+- id: introspection-disabled
+  status: 500
+  envelope: graphql-errors
+  title: Introspection is not allowed
+  message: 'Introspection is not allowed'
+  observed_at: https://api.pocus.com/graphql
+  remediation: >-
+    None available to a caller. The schema cannot be retrieved; a developer must obtain the
+    contract from Pocus directly.
+  note: >-
+    Returning HTTP 500 for a deliberate policy refusal is a correctness smell — this is a policy
+    decision, not a server fault, and a 4xx would let clients distinguish it from an outage.
+
+- id: mcp-authorization-required
+  status: 401
+  envelope: jsonrpc-error
+  code: -32001
+  title: Authorization required
+  observed_at: https://docs.pocus.com/mcp
+  remediation: >-
+    Supply credentials for the documentation MCP server. No WWW-Authenticate header and no RFC
+    9728 protected-resource metadata are provided, so the token type and issuer are not
+    discoverable from the challenge.
+
+- id: docs-rate-limited
+  status: 429
+  envelope: html
+  title: Rate limited by the documentation host
+  observed_at: https://docs.pocus.com/*
+  body_hint: 'HTML interstitial titled "Hello there, human!"'
+  remediation: Pace requests to docs.pocus.com. See rate-limits/pocus-rate-limits.yml.
+
+not_captured:
+  reason: >-
+    Application-level error codes for the product API (authentication failures, validation errors,
+    permission denials, integration sync failures) could not be observed because every Pocus
+    mutation and query requires an authenticated workspace token, and Pocus publishes no error
+    reference. Nothing has been assumed about them.

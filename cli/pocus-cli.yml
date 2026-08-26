@@ -1,0 +1,91 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://registry.npmjs.org/@pocus/cli — README.md and oclif.manifest.json read verbatim from the
+  published 0.1.1 tarball, 2026-08-26
+name: Pocus CLI
+description: >-
+  A first-party oclif command-line tool for Pocus customers to configure the connections used by
+  the Pocus data collector. It authenticates the operator interactively with their Pocus account
+  email and password and then talks to the Pocus core GraphQL API. It has not been republished
+  since 2021 and is no longer functional (see status).
+
+binary: pocus
+package: '@pocus/cli'
+package_url: https://www.npmjs.com/package/@pocus/cli
+version: 0.1.1
+published: '2021-08-23'
+framework: oclif
+runtime: Node.js (README usage banner records node-v14.15.4, darwin-x64)
+
+install:
+- method: npx
+  command: npx @pocus/cli
+  note: Documented as requiring no installation.
+- method: npm-global
+  command: npm install -g @pocus/cli
+  note: Installs the `pocus` binary.
+
+commands:
+- id: connection:add
+  invocation: pocus connection:add
+  description: adds a connection to the Pocus data collector
+  flags: []
+  args: []
+- id: connection:delete
+  invocation: pocus connection:delete
+  description: deletes a connection from the Pocus data collector
+  flags: []
+  args: []
+- id: connection:list
+  invocation: pocus connection:list
+  description: lists connections set up on the Pocus data collector
+  flags: []
+  args: []
+- id: connection:update
+  invocation: pocus connection:update
+  description: updates a connection in the Pocus data collector
+  flags: []
+  args: []
+- id: connection:validate
+  invocation: pocus connection:validate
+  description: validates connectivity to a connection set up on the Pocus data collector
+  flags: []
+  args: []
+- id: help
+  invocation: pocus help [COMMAND]
+  description: display help for pocus
+  flags: []
+  args: []
+
+command_groups:
+- group: connection
+  purpose: >-
+    Full CRUD plus a connectivity check over the data-warehouse / CRM connections that feed the
+    Pocus data collector.
+  commands: [connection:add, connection:delete, connection:list, connection:update, connection:validate]
+
+authentication:
+  style: interactive-prompt
+  mechanism: AWS Cognito user pool (aws-amplify Auth.signIn), region us-east-1
+  prompts:
+  - What is your Pocus account email?
+  - What is your Pocus account password?
+  password_policy_stated: >-
+    "Pocus passwords are required to: be at least 8 characters, include numbers, include special
+    characters, include lowercase and uppercase letters" — emitted by the CLI on the
+    NEW_PASSWORD_REQUIRED challenge.
+  token: Bearer <Cognito ID token JWT> on the Authorization header
+  api_target: ${POCUS_CORE_API_ENDPOINT}/graphql, defaulting to https://api.pocus.com/graphql
+
+status: non-functional
+status_evidence: >-
+  lib/util/config.js hardcodes the production Cognito user pool id and web client id, with the
+  in-source comment "Production credentials are hardcoded... We should really load this in during
+  build". That user pool's OIDC discovery document now returns HTTP 404
+  {"message":"User pool ... does not exist."}, so the published CLI cannot complete sign-in. Pocus
+  has since moved identity to auth.pocus.com (OAuth 2.0 / OIDC), which this CLI has no knowledge of.
+
+not_documented_on_site: >-
+  The CLI is not mentioned anywhere in the docs.pocus.com llms.txt index or the public
+  documentation; it is discoverable only via the npm registry.

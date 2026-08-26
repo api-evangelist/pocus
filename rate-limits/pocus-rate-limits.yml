@@ -1,0 +1,70 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  Live response headers observed on https://api.pocus.com, https://auth.pocus.com and
+  https://docs.pocus.com during discovery probing, 2026-08-26; docs.pocus.com llms.txt index
+  searched for a limits page
+name: Pocus rate limits
+description: >-
+  Pocus documents no rate limits for its API. No limits page exists in the documentation index,
+  and no RateLimit-*, X-RateLimit-* or Retry-After headers were returned by any Pocus API host.
+  The only rate limiting actually OBSERVED was on the documentation host, which returned HTTP 429
+  under sequential probing — that is a docs-platform edge control, not a published API limit.
+
+limit_count: 0
+
+limits: []
+
+response_headers:
+  standard_ratelimit_headers: false
+  x_ratelimit_headers: false
+  retry_after: false
+  observed_on:
+  - host: api.pocus.com
+    headers_present: []
+    note: No rate-limit signalling headers on any observed response.
+  - host: auth.pocus.com
+    headers_present: []
+    note: >-
+      No rate-limit headers. The host root is fronted by a WAF that returns a JSON denial body,
+      but that is an access control rather than a rate limit and carries no retry guidance.
+  - host: docs.pocus.com
+    headers_present: []
+    note: >-
+      Returned HTTP 429 with an HTML interstitial titled "Hello there, human!" and no Retry-After
+      header, so a client is given no machine-readable backoff signal.
+
+observed_throttling:
+- surface: https://docs.pocus.com/*
+  status: 429
+  observed: '2026-08-26'
+  trigger: Sequential unauthenticated GETs during contract discovery.
+  retry_after_header: false
+  body: HTML challenge interstitial, not JSON.
+  note: >-
+    Documentation host only. This is the ReadMe/Cloudflare edge, and it does not describe the
+    product API's limits.
+
+exhaustion_behaviour:
+  status_code: null
+  documented: false
+  note: >-
+    What api.pocus.com does on exhaustion is unknown — it could not be observed without an
+    authenticated token, and it is not documented.
+
+evidence:
+- url: https://docs.pocus.com/llms.txt
+  status: 200
+  note: >-
+    The complete documentation index. It lists no rate limits, quotas, throttling or API limits
+    page — the surface is documented for end users and administrators, not for API consumers.
+- url: https://api.pocus.com/graphql
+  status: 400
+  note: Response carried no rate-limit headers.
+- url: https://docs.pocus.com/redoc
+  status: 429
+  note: Observed throttling on the docs host.
+
+note: >-
+  limit_count is an honest zero — limits are undocumented, not zero-valued. An agent calling
+  api.pocus.com has no runtime signal to pace itself with and no documented ceiling to respect.

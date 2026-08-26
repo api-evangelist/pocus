@@ -1,0 +1,162 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  auth.pocus.com well-known metadata (HTTP 200), docs.pocus.com/docs/okta,
+  docs.pocus.com/docs/okta-scim, docs.pocus.com/mcp, api.pocus.com/graphql — all probed 2026-08-26
+name: Pocus standards conformance
+description: >-
+  What the Pocus surface demonstrably speaks, evidenced against the exact document or endpoint that
+  proves it. Pocus is unusually strong on identity standards and absent on API description
+  standards: it publishes conformant OAuth 2.0 / OIDC metadata and supports SCIM 2.0 and SAML 2.0,
+  but ships no OpenAPI, no AsyncAPI, and disables GraphQL introspection.
+
+conformance:
+- id: oauth2
+  name: OAuth 2.0 (RFC 6749)
+  conforms: true
+  evidence: >-
+    https://auth.pocus.com/.well-known/oauth-authorization-server returns HTTP 200 with issuer,
+    authorization_endpoint, token_endpoint and grant_types_supported.
+
+- id: oauth2-authorization-server-metadata
+  name: OAuth 2.0 Authorization Server Metadata (RFC 8414)
+  conforms: true
+  evidence: >-
+    The /.well-known/oauth-authorization-server document is served at the RFC 8414 location and
+    carries the required issuer, authorization_endpoint, token_endpoint, response_types_supported
+    and jwks_uri members.
+
+- id: oidc
+  name: OpenID Connect Core 1.0 + Discovery
+  conforms: true
+  evidence: >-
+    https://auth.pocus.com/.well-known/openid-configuration returns HTTP 200 with issuer,
+    userinfo_endpoint, jwks_uri, subject_types_supported [public] and
+    id_token_signing_alg_values_supported [RS256, ES256]; the JWKS at
+    https://auth.pocus.com/.well-known/jwks.json returns HTTP 200 with an RS256 signing key.
+
+- id: oauth2-pkce
+  name: PKCE (RFC 7636)
+  conforms: true
+  evidence: 'code_challenge_methods_supported: ["S256"] in the authorization-server metadata.'
+
+- id: oauth2-token-exchange
+  name: OAuth 2.0 Token Exchange (RFC 8693)
+  conforms: true
+  evidence: 'grant_types_supported includes urn:ietf:params:oauth:grant-type:token-exchange.'
+
+- id: oauth2-device-grant
+  name: OAuth 2.0 Device Authorization Grant (RFC 8628)
+  conforms: true
+  evidence: >-
+    grant_types_supported includes urn:ietf:params:oauth:grant-type:device_code and a
+    device_authorization_endpoint (https://auth.pocus.com/oauth/device/authorize) is advertised.
+
+- id: jwt
+  name: JSON Web Token (RFC 7519) / JWS
+  conforms: true
+  evidence: >-
+    ID tokens signed RS256/ES256 per the discovery document; the core GraphQL API is called with
+    `Authorization: Bearer <JWT>` per Pocus' own @pocus/cli source.
+
+- id: saml2
+  name: SAML 2.0 Web Browser SSO
+  conforms: true
+  evidence: >-
+    https://docs.pocus.com/docs/okta documents an ACS URL of
+    https://auth.pocus.com/auth/saml/callback and an Audience URI of "pocus" for the customer's
+    Okta SAML application.
+
+- id: scim2
+  name: SCIM 2.0 (RFC 7643 / RFC 7644)
+  conforms: true
+  evidence: >-
+    https://docs.pocus.com/docs/okta-scim documents Pocus as a SCIM service provider: it issues a
+    provisioning URL used as Okta's "SCIM connector base URL", authenticates with an HTTP Header
+    bearer token, uses `userName` as the unique identifier field, and supports the Okta
+    provisioning actions except group import.
+  caveat: >-
+    Conformance is asserted from the provider's own configuration documentation. The SCIM base URL
+    is tenant-issued and not public, so /scim/v2/ServiceProviderConfig and /scim/v2/Schemas could
+    not be fetched to verify the schema URNs directly — both returned 404 on api.pocus.com.
+
+- id: graphql
+  name: GraphQL
+  conforms: true
+  evidence: >-
+    https://api.pocus.com/graphql is a live Apollo Server. It returns a GraphQL-shaped errors[]
+    envelope, including the standard Apollo CSRF-prevention error naming the
+    x-apollo-operation-name / apollo-require-preflight headers.
+  caveat: >-
+    Introspection is disabled — a POST of {__schema{queryType{name}}} returns HTTP 500
+    {"errors":[{"message":"Introspection is not allowed"}]}. The schema is therefore not
+    machine-readable and no SDL was captured.
+
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  evidence: >-
+    https://docs.pocus.com/mcp answers a JSON-RPC 2.0 tools/list POST with a well-formed
+    JSON-RPC error object (code -32001, "Authorization required") at HTTP 401 — protocol-correct
+    behaviour from a real MCP server.
+  caveat: Auth-gated; tool set not enumerable anonymously. Serves documentation, not the product API.
+
+- id: openapi
+  name: OpenAPI
+  conforms: false
+  evidence: >-
+    No OpenAPI or Swagger document exists. /openapi.json, /openapi.yaml, /swagger.json,
+    /v1/openapi.json, /api/v1/openapi.json, /api-docs, /redoc, /docs, /swagger and /spec were
+    probed on api.pocus.com (all JSON 404), www.pocus.com (all 404), docs.pocus.com (all 404) and
+    app.pocus.com (all 200 but returning an identical 3024-byte SPA shell, i.e. not a spec).
+
+- id: asyncapi
+  name: AsyncAPI
+  conforms: false
+  evidence: >-
+    No AsyncAPI document and no public event/streaming/webhook catalog. Pocus delivers outbound
+    data through a Snowflake data share refreshed every 12 hours and through Slack alerts and CRM
+    write-back, none of which is a subscribable webhook surface documented for developers.
+
+- id: rfc9457
+  name: RFC 9457 Problem Details for HTTP APIs
+  conforms: false
+  evidence: >-
+    Observed error bodies use framework-native envelopes, not application/problem+json:
+    api.pocus.com returns NestJS shape {"message","error","statusCode"}, auth.pocus.com returns
+    {"errors":[...]}, and the GraphQL endpoint returns the GraphQL errors[] envelope.
+
+- id: rfc9116
+  name: RFC 9116 security.txt
+  conforms: false
+  evidence: '/.well-known/security.txt returns 404 on www.pocus.com, pocus.com, api.pocus.com, auth.pocus.com and docs.pocus.com.'
+
+- id: rfc9727
+  name: RFC 9727 api-catalog
+  conforms: false
+  evidence: '/.well-known/api-catalog returns 404 on every Pocus host probed.'
+
+- id: a2a
+  name: A2A Agent Card
+  conforms: false
+  evidence: >-
+    /.well-known/agent-card.json and /.well-known/agent.json return 404 on www.pocus.com,
+    pocus.com, api.pocus.com, auth.pocus.com and docs.pocus.com. app.pocus.com returns 200 for both
+    but the body is the site's SPA HTML shell, not an AgentCard, and is rejected.
+
+domain_standard:
+  market: Go-to-market / sales intelligence / revenue operations
+  standard_declared: null
+  assessment: >-
+    REWARD-ONLY, and not awarded. There is no interoperability standard for sales-intelligence or
+    revenue-operations payloads that Pocus could declare in a contract, and Pocus declares none.
+    The nearest domain-relevant standard it does implement is SCIM 2.0 for workforce user
+    provisioning, which is recorded above as an identity conformance rather than a market
+    data-model conformance — Pocus is a SCIM consumer of customer identity, not a publisher of a
+    sales-domain schema. No conformance has been invented to fill this slot.
+
+summary:
+  conformant: 11
+  non_conformant: 6
+  strength: Identity and authorization standards (OAuth 2.0, OIDC, PKCE, token exchange, device grant, SAML 2.0, SCIM 2.0)
+  weakness: API description standards — no OpenAPI, no AsyncAPI, no GraphQL SDL, no RFC 9457 errors

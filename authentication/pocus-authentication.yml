@@ -1,0 +1,120 @@
+generated: '2026-08-26'
+method: probed
+source: >-
+  https://auth.pocus.com/.well-known/openid-configuration and
+  https://auth.pocus.com/.well-known/oauth-authorization-server (both HTTP 200, fetched
+  2026-08-26); https://docs.pocus.com/docs/okta and /docs/okta-scim; the published @pocus/cli
+  0.1.1 package source
+docs: https://docs.pocus.com/docs/okta
+name: Pocus authentication profile
+description: >-
+  Pocus runs a standards-based OAuth 2.0 authorization server and OpenID Connect provider at
+  auth.pocus.com and publishes its metadata anonymously. Enterprise identity federates in over
+  SAML 2.0 (Okta documented) with SCIM 2.0 provisioning. The core GraphQL API at api.pocus.com
+  accepts a bearer JWT. Pocus publishes no OpenAPI, so no securityScheme could be derived from a
+  contract — everything below is read from documents the provider actually serves.
+
+schemes:
+- id: pocus_oauth2
+  type: oauth2
+  description: >-
+    OAuth 2.0 authorization server at https://auth.pocus.com, advertised via RFC 8414
+    authorization-server metadata.
+  issuer: https://auth.pocus.com
+  endpoints:
+    authorization: https://auth.pocus.com/oauth/authorize
+    token: https://auth.pocus.com/oauth/token
+    userinfo: https://auth.pocus.com/identity/resources/users/v2/me
+    jwks: https://auth.pocus.com/.well-known/jwks.json
+    end_session: https://auth.pocus.com/oauth/logout
+    device_authorization: https://auth.pocus.com/oauth/device/authorize
+  flows:
+  - grant: authorization_code
+    pkce: true
+    code_challenge_methods: [S256]
+    response_types: [code]
+    response_modes: [query]
+  - grant: refresh_token
+  - grant: client_credentials
+  - grant: 'urn:ietf:params:oauth:grant-type:token-exchange'
+    rfc: RFC 8693
+  - grant: 'urn:ietf:params:oauth:grant-type:device_code'
+    rfc: RFC 8628
+  client_authentication: [client_secret_basic, client_secret_post]
+  scopes: [openid, profile, email]
+  evidence:
+    url: https://auth.pocus.com/.well-known/oauth-authorization-server
+    status: 200
+
+- id: pocus_oidc
+  type: openIdConnect
+  description: OpenID Connect provider co-located on the same issuer.
+  openIdConnectUrl: https://auth.pocus.com/.well-known/openid-configuration
+  subject_types_supported: [public]
+  id_token_signing_alg_values_supported: [RS256, ES256]
+  token_endpoint_auth_signing_alg_values_supported: [RS256, ES256]
+  jwks_status: 'HTTP 200 — one RSA signing key, kid b936d5e7, alg RS256, use sig'
+  evidence:
+    url: https://auth.pocus.com/.well-known/openid-configuration
+    status: 200
+
+- id: pocus_bearer_jwt
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: >-
+    The core GraphQL API at https://api.pocus.com/graphql is called with
+    `Authorization: Bearer <JWT>`.
+  applies_to: https://api.pocus.com/graphql
+  evidence: >-
+    Read from Pocus' own published @pocus/cli 0.1.1 (lib/util/graphqlClient.js), which sets
+    headers.Authorization to `Bearer ${...getIdToken().getJwtToken()}` against
+    `${POCUS_CORE_API_ENDPOINT}/graphql`.
+  note: >-
+    The published CLI obtained that JWT from an AWS Cognito user pool that no longer exists;
+    current tokens are issued by auth.pocus.com. The CLI is 2021-era and is not a current
+    description of how a caller should authenticate.
+
+- id: pocus_saml_sso
+  type: saml2
+  description: SAML 2.0 single sign-on for enterprise workspaces; Okta is the documented IdP.
+  acs_url: https://auth.pocus.com/auth/saml/callback
+  audience_uri: pocus
+  group_mapping: >-
+    Okta groups map to Pocus roles (see https://docs.pocus.com/docs/permissions). Custom Okta user
+    attributes are pulled at login.
+  configured_in: Workspace Settings > User Management > SSO > Setup SSO Connection
+  evidence:
+    url: https://docs.pocus.com/docs/okta
+    status: 200
+
+- id: pocus_scim_token
+  type: http
+  scheme: bearer
+  description: >-
+    SCIM 2.0 provisioning connector. Pocus issues a per-connection provisioning URL (the "SCIM
+    connector base URL") and an authorization token; Okta is configured with authentication mode
+    "HTTP Header" using that token.
+  unique_identifier_field: userName
+  base_url: null
+  base_url_note: >-
+    The SCIM base URL is tenant-issued and only visible inside an authenticated Pocus workspace;
+    Pocus does not publish it, so it is recorded as null rather than guessed.
+  evidence:
+    url: https://docs.pocus.com/docs/okta-scim
+    status: 200
+
+api_key_support: false
+api_key_note: >-
+  No public API key programme, key prefix, or self-serve credential issuance was found anywhere on
+  pocus.com or docs.pocus.com. There is no developer signup that yields an API credential.
+
+summary:
+  schemes_count: 5
+  primary: OAuth 2.0 / OpenID Connect (auth.pocus.com)
+  machine_readable_auth_metadata: true
+  derived_from_openapi: false
+  gap: >-
+    Authentication metadata is excellent and standards-based, but there is no published API
+    reference binding it to operations — a developer can discover how to get a token and cannot
+    discover what to call with it.

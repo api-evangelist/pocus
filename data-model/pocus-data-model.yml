@@ -1,0 +1,215 @@
+generated: '2026-08-26'
+method: derived
+source: >-
+  https://docs.pocus.com/docs/pocus-data-share-reference (HTTP 200, fetched as markdown 2026-08-26)
+  — the eight tables Pocus shares via Snowflake, with their published column lists
+name: Pocus data model
+description: >-
+  Pocus publishes no OpenAPI and disables GraphQL introspection, so no entity graph could be
+  derived from a contract. It does, however, publish a complete column-level reference for the
+  eight tables it exposes through its Snowflake data share. That reference is the only
+  first-party, machine-adjacent description of Pocus' domain objects, and the entity graph below
+  is derived from it by following the ID columns. Relationships are inferred from column naming
+  and the published column descriptions; Pocus states no foreign keys explicitly, so confidence is
+  recorded per relationship.
+
+derived_from: snowflake-data-share
+derived_from_note: >-
+  This describes the ANALYTICS projection of the Pocus domain, not the API request/response
+  shapes. The GraphQL API very likely exposes a richer object set (accounts, contacts, signals,
+  scores, enrichment fields) that is not represented here because it is not published anywhere.
+refresh_interval: 12 hours
+table_naming: >-
+  Tables are prefixed per customer in the actual share — the reference lists ACTION_HISTORY, which
+  a customer named Google would receive as GOOGLE_ACTION_HISTORY.
+
+entities:
+- name: ObjectConfiguration
+  table: OBJECT_CONFIGURATION
+  description: >-
+    The definition of an object type Pocus tracks (the configured entity a playbook, list or inbox
+    entry operates over). The hub of the model — nearly every other table carries
+    OBJECT_CONFIGURATION_ID.
+  primary_key: ID
+  fields: [ID, CREATED_AT, UPDATED_AT, NAME]
+  relationships:
+  - type: has_many
+    target: Playbook
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: Goal
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: List
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: InboxEntry
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: ActionHistory
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+
+- name: Goal
+  table: GOAL
+  description: >-
+    A GTM objective. Carries the condition sets that decide which records are eligible for, and
+    which count as having met, the goal.
+  primary_key: ID
+  fields: [ID, NAME, GOAL_CONDITIONS, ELIGIBLE_CONDITIONS, CREATED_AT, UPDATED_AT, OBJECT_CONFIGURATION_ID]
+  relationships:
+  - type: belongs_to
+    target: ObjectConfiguration
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: Playbook
+    via: GOAL_ID
+    confidence: high
+
+- name: Playbook
+  table: PLAYBOOK
+  description: >-
+    An operationalized GTM motion attached to a goal, carrying the conditions that qualify a
+    record into it.
+  primary_key: ID
+  fields: [ID, NAME, GOAL_ID, QUALIFIED_CONDITIONS, CREATED_AT, UPDATED_AT, OBJECT_CONFIGURATION_ID]
+  relationships:
+  - type: belongs_to
+    target: Goal
+    via: GOAL_ID
+    confidence: high
+  - type: belongs_to
+    target: ObjectConfiguration
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: InboxEntry
+    via: PLAYBOOK_ID
+    confidence: high
+
+- name: List
+  table: LIST
+  description: >-
+    A saved, filtered view over an object configuration, with its own column selection and
+    ownership.
+  primary_key: ID
+  fields: [ID, NAME, CREATED_AT, UPDATED_AT, OBJECT_CONFIGURATION_ID, OWNER_EMAIL, LAST_EDITOR_EMAIL, FILTER_CONDITIONS, LIST_COLUMNS]
+  relationships:
+  - type: belongs_to
+    target: ObjectConfiguration
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: belongs_to
+    target: User
+    via: OWNER_EMAIL
+    confidence: medium
+    note: Joined on email address, not on USER_ID — Pocus does not publish a user id on this table.
+
+- name: InboxEntry
+  table: CURRENT_INBOX_STATE
+  description: >-
+    The current state of a record surfaced to a rep in the Intelligent Inbox. One row per live
+    inbox entry.
+  primary_key: INBOX_ENTRY_ID
+  fields: [INBOX_ENTRY_ID, POCUS_ID, EXTERNAL_ID_NAME, EXTERNAL_ID, OBJECT_CONFIGURATION_ID, PLAYBOOK_ID, SURFACED_AT, UPDATED_AT, LATEST_STATE]
+  relationships:
+  - type: belongs_to
+    target: Playbook
+    via: PLAYBOOK_ID
+    confidence: high
+  - type: belongs_to
+    target: ObjectConfiguration
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  - type: has_many
+    target: InboxStateHistory
+    via: INBOX_ENTRY_ID
+    confidence: high
+  - type: has_many
+    target: ActionHistory
+    via: INBOX_ENTRY_ID
+    confidence: high
+
+- name: InboxStateHistory
+  table: INBOX_STATE_HISTORY
+  description: Append-only transition log of inbox entry states, attributed to the acting user by email.
+  primary_key: ID
+  fields: [TIMESTAMP, ID, OBJECT_CONFIGURATION_ID, POCUS_ID, EXTERNAL_ID_NAME, EXTERNAL_ID, PLAYBOOK_ID, INBOX_ENTRY_ID, NEW_STATE, ACTIONED_BY_EMAIL]
+  relationships:
+  - type: belongs_to
+    target: InboxEntry
+    via: INBOX_ENTRY_ID
+    confidence: high
+  - type: belongs_to
+    target: Playbook
+    via: PLAYBOOK_ID
+    confidence: high
+
+- name: ActionHistory
+  table: ACTION_HISTORY
+  description: >-
+    Append-only log of actions taken in Pocus — integration write-backs (updating Salesforce,
+    enrolling a user into an Outreach sequence) and snoozes — with a success flag.
+  primary_key: ID
+  fields: [TIMESTAMP, OBJECT_CONFIGURATION_ID, ID, POCUS_ID, EXTERNAL_ID_NAME, EXTERNAL_ID, ACTION_CONFIGURATION_ID, ACTION_NAME, ACTION_TYPE, ACTIONED_BY_EMAIL, ACTION_SUCCESS, INBOX_ENTRY_ID, SOURCE_ID, SOURCE_TYPE]
+  relationships:
+  - type: belongs_to
+    target: InboxEntry
+    via: INBOX_ENTRY_ID
+    confidence: high
+  - type: belongs_to
+    target: ObjectConfiguration
+    via: OBJECT_CONFIGURATION_ID
+    confidence: high
+  note: >-
+    This is the audit trail referenced in conventions/pocus-conventions.yml reversibility — it
+    records what was done, including ACTION_SUCCESS, but exposes no reversal operation.
+
+- name: User
+  table: USER_ACTIVITY
+  description: Per-user activity dates within Pocus.
+  primary_key: USER_ID
+  fields: [USER_ID, EMAIL, ACTIVITY_DATE]
+  relationships:
+  - type: has_many
+    target: ActionHistory
+    via: ACTIONED_BY_EMAIL
+    confidence: medium
+    note: Joined on email; ACTION_HISTORY does not carry USER_ID.
+
+identifiers:
+- name: POCUS_ID
+  description: >-
+    Pocus' own internal identifier for a record. Present on ACTION_HISTORY, CURRENT_INBOX_STATE
+    and INBOX_STATE_HISTORY.
+  scope: internal
+- name: EXTERNAL_ID / EXTERNAL_ID_NAME
+  description: >-
+    The identity-resolution pair binding a Pocus record to the customer's source system — the
+    value plus the name of the field it came from. This is how a Pocus row is joined back to a
+    Salesforce or HubSpot record.
+  scope: external
+  related_docs: https://docs.pocus.com/docs/identity-resolution
+- name: OBJECT_CONFIGURATION_ID
+  description: The tenant's configured object type; the partition key of the whole model.
+  scope: internal
+
+id_prefixes: []
+id_prefixes_note: >-
+  No id prefix scheme is published (unlike, say, Stripe's `cus_`/`ch_`). Recorded as empty because
+  none was found, not because none was checked.
+
+graph_summary:
+  entities: 8
+  relationships: 16
+  hub: ObjectConfiguration
+  append_only_logs: [ActionHistory, InboxStateHistory]
+  gap: >-
+    Accounts, contacts, signals, scores and enrichment fields — the objects Pocus' product is
+    actually about — have no published schema at all. They appear in the data share only as
+    POCUS_ID / EXTERNAL_ID references.

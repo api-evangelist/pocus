@@ -1,0 +1,89 @@
+# Pocus Documentation
+
+> Documentation for Pocus
+
+Append .md to any documentation page URL to get its markdown version.
+
+## Guides
+- [What is Pocus?](https://docs.pocus.com/docs/what-is-pocus.md)
+- [Platform overview](https://docs.pocus.com/docs/what-is-product-led-sales.md)
+- [Getting started with Pocus AI](https://docs.pocus.com/docs/getting-started-with-ai-strategy.md)
+- [AI Strategy from the Chrome Extension](https://docs.pocus.com/docs/ai-strategy-chrome-ext.md): Onboarding guide for Pocus AI Strategy users. Use this guide to understand how to setup your Pocus account and start generating robust account strategies with AI.
+- [AI Strategy ](https://docs.pocus.com/docs/ai-strategy-tab.md)
+- [AI Alerts](https://docs.pocus.com/docs/ai-alerts.md)
+- [AI Email Generator](https://docs.pocus.com/docs/ai-email-generator.md)
+- [Send AI Email to Your SEP](https://docs.pocus.com/docs/automatically-send-ai-email-to-your-sep.md)
+- [Inbox](https://docs.pocus.com/docs/inbox.md): Go from insight to action quickly with top leads in your inbox.
+- [Lists ](https://docs.pocus.com/docs/lists.md): Learn more about ad-hoc data exploration with Pocus Lists.
+- [Pocus List Library](https://docs.pocus.com/docs/pocus-list-library.md)
+- [Building Lists with Pocus Enriched Data](https://docs.pocus.com/docs/building-lists-with-pocus-enriched-data.md): Pocus has expanded its list-building capabilities with powerful new enrichment data, enabling you to create more targeted lists for both companies and prospects.
+- [Search](https://docs.pocus.com/docs/search.md): Navigate quickly throughout Pocus with powerful OmniSearch
+- [Navigating Pocus](https://docs.pocus.com/docs/navigating-pocus.md): Get acquainted with your Pocus workspace and clicking around.
+- [Filter Deep-Dive](https://docs.pocus.com/docs/filter-deep-dive.md)
+- [SmartMap](https://docs.pocus.com/docs/smartmap.md)
+- [Identity Resolution](https://docs.pocus.com/docs/identity-resolution.md)
+- [How-To Videos ](https://docs.pocus.com/docs/how-to-video-library.md)
+- [How To Videos for Reps](https://docs.pocus.com/docs/rep-content.md)
+- [How To Videos for Admins ](https://docs.pocus.com/docs/admin-and-manager-content.md)
+- [How To Videos for Managers](https://docs.pocus.com/docs/how-to-videos-for-managers.md)
+- [Past Webinars](https://docs.pocus.com/docs/webinars.md)
+- [Configuring the Company Profile](https://docs.pocus.com/docs/company-profile.md): Complete the company profile to make Pocus AI smarter
+- [Playbooks](https://docs.pocus.com/docs/playbooks.md): Learn how to operationalize your GTM strategies by setting up Pocus Playbooks.
+- [Triggers - Playbook Workflow](https://docs.pocus.com/docs/playbook-trigger.md): Learn how to create a trigger for a playbook workflow.
+- [Surface in Inbox](https://docs.pocus.com/docs/surface-to-reps.md): Learn how to configure Inbox and Slack alerts to surface top leads to reps.
+- [Slack Alerts](https://docs.pocus.com/docs/slack-alerts.md)
+- [Automate via Tech-Touch](https://docs.pocus.com/docs/automations.md): Power workflows on their own or to supplement rep activities with Playbook Automations
+- [Version Control for Playbooks](https://docs.pocus.com/docs/version-control-for-playbooks.md): Learn about how version control works as you edit and configure Playbook Workflows.
+- [Playbook Directory](https://docs.pocus.com/docs/playbook-directory.md): Learn about how to manage Goals and Playbooks from your Playbook Directory
+- [Branching Logic](https://docs.pocus.com/docs/branching.md)
+- [Playbook Launch Process Best Practices  🚀](https://docs.pocus.com/docs/playbook-launch-process-best-practices.md)
+- [Drilldowns](https://docs.pocus.com/docs/drilldowns-2.md): Learn how to build custom dashboards designed to help you dive deeper into your data.
+- [Drilldown Overview Sections](https://docs.pocus.com/docs/types-of-drilldown-sections.md): There are several types of sections and widgets you can add to a drilldown page. These can be configured with relevant data and rearranged according to relevance.
+- [Drilldown Tabs](https://docs.pocus.com/docs/drilldown-tabs.md)
+- [People Tab](https://docs.pocus.com/docs/people-tab.md): The People Tab is your centralized hub for prospecting both existing and net new contacts within Pocus. Built with all the power of Pocus Lists, this feature provides a focused, contact-level view of everyone at a given company, streamlining your outreach efforts.
+- [SmartMap Configuration](https://docs.pocus.com/docs/smartmap-configuration.md)
+- [Signals](https://docs.pocus.com/docs/signals.md)
+- [Scores](https://docs.pocus.com/docs/scores.md)
+- [Score Calculation Deep Dive](https://docs.pocus.com/docs/score-calculation-deep-dive.md)
+- [Update Salesforce](https://docs.pocus.com/docs/update-salesforce.md)
+- [Update Contact](https://docs.pocus.com/docs/create-contact.md)
+- [Reverse ETL](https://docs.pocus.com/docs/reverse-etl.md): Bulk update SFDC and Hubspot records with Reverse ETL in Pocus
+- [Internal Variables](https://docs.pocus.com/docs/internal-variables.md): Learn how to pass in custom variables to your third-party tools
+- [Playbook Actions - Mark Done ✅ / Disqualify ❌](https://docs.pocus.com/docs/mark-done-disqualify.md): Streamline lead management with playbook feedback actions.
+- [User Management](https://docs.pocus.com/docs/user-management.md): Keep your usage data secure with additional security features and permissions
+- [Routing](https://docs.pocus.com/docs/routing.md): Customize an end-users workspace to only show their relevant leads with Routing.
+- [Permissions](https://docs.pocus.com/docs/permissions.md): Control access to the various features throughout the Pocus workspace
+- [Okta SSO](https://docs.pocus.com/docs/okta.md): Configuring Okta SSO in Pocus
+- [Okta SCIM](https://docs.pocus.com/docs/okta-scim.md): How to configure Okta SCIM in Pocus
+- [Team Management](https://docs.pocus.com/docs/team-management.md): Easily manage multiple teams inside of Pocus.
+- [Okta Custom User Attributes](https://docs.pocus.com/docs/okta-custom-user-attributes.md): Adding custom attributes allows Pocus to pull these values when a user logs in via Okta SSO.
+- [Bombora Intent Data ](https://docs.pocus.com/docs/bombora-intent-data.md)
+- [Frequently Asked Questions](https://docs.pocus.com/docs/frequently-asked-questions.md): Answers and solutions to frequently encountered questions
+- [Setting Gmail as Your Default Email Client](https://docs.pocus.com/docs/setting-gmail-as-your-default-email-client.md): Want to easily open our AI emails in GMail instead of you regular mail client? Use these settings to help you with this (and really all mailto: links ever again)
+- [Coaching](https://docs.pocus.com/docs/coaching.md): Get a deeper view into Pocus usage and rep activity with coaching.
+- [Playbook Performance Reporting](https://docs.pocus.com/docs/playbook-performance-reporting.md): Get insight into how well your Pocus Playbooks are performing with reporting.
+- [Opportunity & Usage Reporting](https://docs.pocus.com/docs/reporting.md)
+- [User Activity Reporting](https://docs.pocus.com/docs/user-activity-reporting.md)
+- [Opportunities Reporting](https://docs.pocus.com/docs/opportunities-reporting.md)
+- [Playbook and Lists Usage Reporting](https://docs.pocus.com/docs/playbook-and-lists-usage-reporting.md)
+- [Data Sources](https://docs.pocus.com/docs/data-sources.md): Define the data you want to bring into Pocus by configuring your different data sources
+- [Querying with SQL](https://docs.pocus.com/docs/querying-with-sql.md): Learn how to write SQL queries to pull data from your data warehouse into Pocus
+- [Querying Google Sheets](https://docs.pocus.com/docs/querying-google-sheets.md): Learn how to pull data from a Google Sheet into Pocus.
+- [Fields](https://docs.pocus.com/docs/fields.md)
+- [Pocus Enrichment Fields](https://docs.pocus.com/docs/pocus-enrichment-fields.md): Learn about Enrichment Fields, Standard Traits, and how to configure them.
+- [Pocus Data Share Reference](https://docs.pocus.com/docs/pocus-data-share-reference.md): This page explains the tables that Pocus shares via Snowflake. Reach out to our team if you have any questions!
+- [Redshift](https://docs.pocus.com/docs/redshift.md)
+- [Postgres](https://docs.pocus.com/docs/postgres.md): Learn how to pull in data to Pocus from Postgres
+- [Athena](https://docs.pocus.com/docs/athena.md): Learn how to pull in data from Athena into Pocus.
+- [Databricks](https://docs.pocus.com/docs/databricks.md): Set up a Databricks integration in Pocus
+- [Hubspot](https://docs.pocus.com/docs/hubspot.md): Pocus connects to Hubspot to both pull in relevant CRM data around contacts, companies, deals, marketing engagements, etc. and pass back updates to records as activity happens in Pocus. This article dives into configuring the read and write integration.
+- [Salesforce](https://docs.pocus.com/docs/salesforce.md)
+- [How to embed Pocus within Salesforce](https://docs.pocus.com/docs/add-pocus-embed-to-salesforce.md)
+- [Outreach](https://docs.pocus.com/docs/outreach.md): Pocus connects with Outreach as a destination making it easy for reps to take action.
+- [Gong](https://docs.pocus.com/docs/gong.md): How to integrate with Gong
+- [Clari Groove](https://docs.pocus.com/docs/clari-groove.md): How to integrate with Clari's Groove
+- [Apollo](https://docs.pocus.com/docs/apollo.md): Pocus connects with Apollo as a destination making it easy for reps to take action.
+- [Salesloft](https://docs.pocus.com/docs/salesloft.md): Pocus connects with Salesloft as a destination making it easy for reps to take action.
+- [GSuite](https://docs.pocus.com/docs/google-sheets.md): Pocus connects with GSuite tools like Sheets and Slides as both a source of data and a destination for actions.
+- [Website Visitors](https://docs.pocus.com/docs/website-visitors.md): Use the Pocus Snippet to track anonymous website visits to your key pages.
+- [RB2B Integration: Person-level Website Visitors](https://docs.pocus.com/docs/rb2b-integration-person-level-website-visitors.md): Bring person-level resolution to your Pocus Website Visitor insights by enabling our integration with RB2B.

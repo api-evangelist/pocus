@@ -1,0 +1,59 @@
+generated: '2026-08-26'
+method: probed
+source: 'https://docs.pocus.com/mcp — POST tools/list, 2026-08-26'
+name: Pocus Documentation MCP Server
+description: >-
+  Pocus serves a Model Context Protocol endpoint at https://docs.pocus.com/mcp. A POST of
+  {"jsonrpc":"2.0","id":1,"method":"tools/list"} returns HTTP 401 with a well-formed JSON-RPC error
+  ({"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"},"id":null}), which
+  confirms a real MCP server is running and speaking the protocol — it is not an HTML shell or a
+  generic 404. The tool list is auth-gated, so the concrete tool set and inputSchemas could not be
+  enumerated anonymously and are NOT recorded here.
+
+deployment:
+  mode: remote
+  endpoint: https://docs.pocus.com/mcp
+  install: null
+  package: null
+  auth: unknown
+  verified: probed
+
+x-evidence:
+  fetched: '2026-08-26'
+  url: https://docs.pocus.com/mcp
+  method: POST
+  request_body: '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+  http_status: 401
+  content_type: application/json; charset=utf-8
+  response_body: '{"jsonrpc":"2.0","error":{"code":-32001,"message":"Authorization required"},"id":null}'
+  www_authenticate: null
+  notes: >-
+    No WWW-Authenticate header was returned and neither
+    /.well-known/oauth-protected-resource nor /.well-known/oauth-protected-resource/mcp resolves
+    (both 404), so the server does not advertise RFC 9728 protected-resource metadata. The CORS
+    allow-headers list on the 401 (x-readme-conversation-id, x-readme-project-id,
+    x-readme-ai-metadata) indicates this is the MCP server that the ReadMe documentation platform
+    provisions for a project, served on Pocus' own docs hostname.
+
+tools: []
+tools_note: >-
+  Empty by design. The live tools/list is auth-gated and Pocus publishes no tool catalog in its
+  llms.txt, so there is no non-fabricated source for tool names or input schemas. Enumerating them
+  requires authenticated introspection.
+
+other_endpoints_probed:
+- url: https://mcp.pocus.com/mcp
+  status: null
+  note: Host does not resolve to a Pocus MCP service.
+- url: https://api.pocus.com/mcp
+  status: 404
+  note: JSON 404 from the core API host.
+- url: https://api.pocus.com/mcp/sse
+  status: 404
+  note: JSON 404 from the core API host.
+
+caveat: >-
+  This MCP endpoint exposes Pocus DOCUMENTATION to agents, not the Pocus product API. It is a real,
+  reachable agent surface on a Pocus host, but an agent cannot use it to read or write account,
+  playbook or signal data — that surface is the GraphQL API at api.pocus.com, which has no MCP
+  binding and no published schema.

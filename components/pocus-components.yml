@@ -1,0 +1,73 @@
+generated: '2026-08-26'
+method: searched
+source: >-
+  https://docs.pocus.com/docs/website-visitors, /docs/add-pocus-embed-to-salesforce,
+  /docs/ai-strategy-chrome-ext, https://chromewebstore.google.com/detail/pocus/cjglpheainejjoboeclimcajhojjofed
+  — fetched 2026-08-26
+name: Pocus embedded and client-side components
+description: >-
+  Pocus ships three client-side surfaces that a customer deploys outside the Pocus app: a
+  first-party JavaScript tracking snippet, an embeddable Pocus view inside Salesforce, and a
+  browser extension. None is a developer component library — there is no element/web-component
+  package and no npm-distributed UI kit. They are recorded because each is a real deployed Pocus
+  artifact running in a customer's environment.
+
+families:
+- family: Tracking
+  components:
+  - name: Pocus Snippet (Website Visitors)
+    kind: javascript-snippet
+    docs: https://docs.pocus.com/docs/website-visitors
+    docs_status: 200
+    purpose: >-
+      Tracks anonymous visits to a customer's key pages and attributes them into Pocus pipeline
+      insight.
+    distribution: >-
+      Retrieved per-workspace from the Pocus app at
+      https://app.pocus.com/workspace/integrations by adding a "Website Visitors" connection, then
+      pasted into the customer's site.
+    loader_url: null
+    version: null
+    version_note: >-
+      Checked, nothing to record. The snippet is issued per workspace from inside the
+      authenticated app and its source is not published on a public CDN, so there is no public URL
+      to read a pinned version from and no registry metadata endpoint to query. A consumer cannot
+      determine the snippet version either.
+    third_party_augmentation:
+    - name: RB2B
+      docs: https://docs.pocus.com/docs/rb2b-integration-person-level-website-visitors
+      purpose: Adds person-level resolution to the anonymous visitor data.
+      first_party: false
+
+- family: Embedded views
+  components:
+  - name: Pocus embed for Salesforce
+    kind: iframe-embed
+    docs: https://docs.pocus.com/docs/add-pocus-embed-to-salesforce
+    purpose: Surfaces the Pocus record view inside a Salesforce record page.
+    distribution: Configured in Salesforce against the customer's Pocus workspace.
+    version: null
+    version_note: Not versioned publicly; checked, nothing to record.
+
+- family: Browser extension
+  components:
+  - name: Pocus Chrome Extension
+    kind: browser-extension
+    docs: https://docs.pocus.com/docs/ai-strategy-chrome-ext
+    store_url: https://chromewebstore.google.com/detail/pocus/cjglpheainejjoboeclimcajhojjofed
+    store_status: 200
+    purpose: >-
+      Generates Pocus AI account strategies from the browser, outside the Pocus web app.
+    version: 0.0.18
+    published: '2026-05-21'
+    users: 882
+    first_party: true
+
+summary:
+  families: 3
+  components: 3
+  developer_component_library: false
+  note: >-
+    All three are configured through the Pocus UI rather than installed from a package registry,
+    so none of them gives a developer a programmable building block. Distinct from
+    packages/pocus-packages.yml, which covers registry-distributed artifacts.
