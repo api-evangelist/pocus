@@ -10,6 +10,17 @@ description: >-
   Its programmable surface is a GraphQL core API at api.pocus.com, an OAuth 2.0 / OpenID Connect
   authorization server at auth.pocus.com, SCIM 2.0 user provisioning and SAML SSO, plus a Snowflake
   data share for warehouse-native delivery. Pocus was acquired by Apollo.io, announced 2026-03-19.
+deliveryModel:
+  model: saas
+  open_source: false
+  commercial: true
+  callable_host: false
+  label: Hosted service · you call their endpoint
+  confidence: medium
+  source:
+  - pricing
+  generated: '2026-08-28'
+  method: derived
 image: https://cdn.prod.website-files.com/643354ef999e7685d54b670e/643355a73f44a743d66fa045_apple-icon-256.png
 url: https://raw.githubusercontent.com/api-evangelist/pocus/refs/heads/main/apis.yml
 x-type: company
