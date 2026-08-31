@@ -76,6 +76,10 @@ apis:
   humanURL: https://docs.pocus.com/docs/okta
   baseURL: https://auth.pocus.com
   tags:
+  - Authentication
+  - OpenID Connect
+  - Identity
+  tags_raw:
   - OAuth
   - OpenID Connect
   - Identity
@@ -85,6 +89,11 @@ apis:
   - type: OpenIDConnect
     url: well-known/pocus-auth-openid-configuration.json
 common:
+- type: ParentCompany
+  url: https://apis.io/providers/apollo/
+  name: Apollo
+  x-relationship: acquired
+  x-evidence: "Pocus was acquired by Apollo.io, announced 2026-03-19."
 - type: Website
   url: https://www.pocus.com/
 - type: DeveloperPortal
