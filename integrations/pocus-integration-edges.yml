@@ -1,16 +1,53 @@
 generated: '2026-10-12'
-method: none
+method: searched
 source:
 - https://zapier.com/apps/pocus/integrations
 - https://n8n.io/integrations/pocus/
 - https://composio.dev/toolkits/pocus
 - https://monid.ai/tools/pocus
 checked:
+- https://api.nuget.org/v3
 - https://composio.dev/toolkits/pocus
+- https://crates.io/api/v1
 - https://monid.ai/tools/pocus
 - https://n8n.io/integrations/pocus/
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
 - https://zapier.com/apps/pocus/integrations
 summary: null
 marketplace_apps: []
-edges: []
+edges:
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@pocus/cli
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@pocus/cli'
+      version: 0.1.1
+      released: '2022-04-06'
+      released_field: modified
+      lapsed: true
+      page: https://www.npmjs.com/package/@pocus/cli
+      repo_leg: domain:pocus.com
+      publisher_leg: email:pocus.com
+      matched_by: domain
+    current: false
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 templates: []
